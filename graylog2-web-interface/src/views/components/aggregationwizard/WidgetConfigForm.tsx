@@ -15,12 +15,17 @@
  * <http://www.mongodb.com/licensing/server-side-public-license>.
  */
 import * as React from 'react';
+import { useRef, useEffect, useContext } from 'react';
 import { Form, Formik, FormikProps } from 'formik';
 import { ConfigurationField } from 'views/types';
 
+import WidgetEditApplyAllChangesContext from 'views/components/contexts/WidgetEditApplyAllChangesContext';
 import PropagateValidationState from 'views/components/aggregationwizard/PropagateValidationState';
 import VisualizationConfig from 'views/logic/aggregationbuilder/visualizations/VisualizationConfig';
 import { AutoTimeConfig, TimeUnitConfig } from 'views/logic/aggregationbuilder/Pivot';
+import WidgetConfig from 'views/logic/widgets/WidgetConfig';
+
+import { updateWidgetAggregationElements } from './AggregationWizard';
 
 export type MetricFormValues = {
   function: string,
@@ -102,17 +107,42 @@ type Props = {
   validate: (formValues: WidgetConfigFormValues) => { [key: string]: string },
 }
 
+const useBindApplyElementConfigurationChanges = (formRef) => {
+  const { bindApplyElementConfigurationChanges } = useContext(WidgetEditApplyAllChangesContext);
+
+  useEffect(() => {
+    const updateWidgetConfig = (newWidgetConfig: WidgetConfig) => {
+      if (formRef.current) {
+        const { dirty, values, isValid } = formRef.current;
+
+        if (dirty && isValid) {
+          return updateWidgetAggregationElements(values);
+        }
+      }
+
+      return newWidgetConfig;
+    };
+
+    bindApplyElementConfigurationChanges(updateWidgetConfig);
+  }, [formRef, bindApplyElementConfigurationChanges]);
+};
+
 const WidgetConfigForm = ({ children, onSubmit, initialValues, validate }: Props) => {
+  const formRef = useRef(null);
+
+  useBindApplyElementConfigurationChanges(formRef);
+
   return (
     <Formik<WidgetConfigFormValues> initialValues={initialValues}
                                     validate={validate}
                                     enableReinitialize
+                                    innerRef={formRef}
                                     validateOnChange
                                     validateOnMount
                                     onSubmit={onSubmit}>
       {(...args) => (
         <Form className="form form-horizontal">
-          <PropagateValidationState />
+          <PropagateValidationState formKey="widget-config" />
           {typeof children === 'function' ? children(...args) : children}
         </Form>
       )}

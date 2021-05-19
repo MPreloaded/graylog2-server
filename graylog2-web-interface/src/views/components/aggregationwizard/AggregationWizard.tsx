@@ -75,7 +75,7 @@ const onCreateElement = (
   }
 };
 
-const _onSubmit = (formValues: WidgetConfigFormValues, onConfigChange: (newConfig: AggregationWidgetConfig) => void) => {
+export const updateWidgetAggregationElements = (formValues) => {
   const toConfigByKey = Object.fromEntries(aggregationElements.map(({ key, toConfig }) => [key, toConfig]));
 
   const newConfig = Object.keys(formValues).map((key) => {
@@ -88,7 +88,13 @@ const _onSubmit = (formValues: WidgetConfigFormValues, onConfigChange: (newConfi
     return toConfig;
   }).reduce((prevConfig, toConfig) => toConfig(formValues, prevConfig), AggregationWidgetConfig.builder());
 
-  onConfigChange(newConfig.build());
+  return newConfig.build();
+};
+
+const _onSubmit = (formValues: WidgetConfigFormValues, onConfigChange: (newConfig: AggregationWidgetConfig) => void) => {
+  const newConfig = updateWidgetAggregationElements(formValues);
+
+  return onConfigChange(newConfig);
 };
 
 const validateForm = (formValues: WidgetConfigFormValues) => {
@@ -109,14 +115,12 @@ const AggregationWizard = ({ onChange, config, children }: EditWidgetComponentPr
                           initialValues={initialFormValues}
                           validate={validateForm}>
           {() => (
-            <>
-              <Section data-testid="configure-elements-section">
-                <ElementsConfiguration aggregationElementsByKey={aggregationElementsByKey}
-                                       config={config}
-                                       onCreate={onCreateElement}
-                                       onConfigChange={onChange} />
-              </Section>
-            </>
+            <Section data-testid="configure-elements-section">
+              <ElementsConfiguration aggregationElementsByKey={aggregationElementsByKey}
+                                     config={config}
+                                     onCreate={onCreateElement}
+                                     onConfigChange={onChange} />
+            </Section>
           )}
         </WidgetConfigForm>
       </Controls>

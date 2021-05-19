@@ -96,7 +96,7 @@ const visualizationPlugin: PluginRegistration = {
 };
 
 const expectSubmitButtonToBeDisabled = async () => {
-  const submitButton = await screen.findByRole('button', { name: 'Apply Changes' });
+  const submitButton = await screen.findByRole('button', { name: 'Update Preview' });
 
   expect(submitButton).toBeDisabled();
 };
@@ -128,7 +128,7 @@ describe('AggregationWizard/Visualizations', () => {
     await selectEvent.openMenu(visualizationSelect);
     await selectEvent.select(visualizationSelect, 'Without Config');
 
-    userEvent.click(await screen.findByRole('button', { name: 'Apply Changes' }));
+    userEvent.click(await screen.findByRole('button', { name: 'Update Preview' }));
 
     await waitFor(() => expect(onChange).toHaveBeenCalledWith(expect.objectContaining({ visualization: 'withoutConfig', visualizationConfig: undefined })));
   });
@@ -145,7 +145,7 @@ describe('AggregationWizard/Visualizations', () => {
 
     fireEvent.change(factorInput, { target: { value: '10' } });
 
-    expect(await screen.findByRole('button', { name: 'Apply Changes' })).not.toBeDisabled();
+    expect(await screen.findByRole('button', { name: 'Update Preview' })).not.toBeDisabled();
 
     await selectOption('Select Mode', 'anothermode');
 
@@ -153,7 +153,7 @@ describe('AggregationWizard/Visualizations', () => {
 
     await selectOption('Select Favorite Color', 'Yellow');
 
-    const submitButton = await screen.findByRole('button', { name: 'Apply Changes' });
+    const submitButton = await screen.findByRole('button', { name: 'Update Preview' });
 
     expect(submitButton).not.toBeDisabled();
 

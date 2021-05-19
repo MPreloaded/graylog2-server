@@ -51,7 +51,7 @@ import WidgetActionsMenu from './WidgetActionsMenu';
 import CustomPropTypes from '../CustomPropTypes';
 import InteractiveContext from '../contexts/InteractiveContext';
 
-type Props = {
+export type Props = {
   id: string,
   view: ViewStoreState,
   widget: WidgetModel,
