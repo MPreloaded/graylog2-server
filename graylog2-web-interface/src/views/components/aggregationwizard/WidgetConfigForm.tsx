@@ -111,7 +111,7 @@ const useBindApplyElementConfigurationChanges = (formRef) => {
   const { bindApplyElementConfigurationChanges } = useContext(WidgetEditApplyAllChangesContext);
 
   useEffect(() => {
-    const updateWidgetConfig = (newWidgetConfig: WidgetConfig) => {
+    bindApplyElementConfigurationChanges(() => {
       if (formRef.current) {
         const { dirty, values, isValid } = formRef.current;
 
@@ -120,10 +120,8 @@ const useBindApplyElementConfigurationChanges = (formRef) => {
         }
       }
 
-      return newWidgetConfig;
-    };
-
-    bindApplyElementConfigurationChanges(updateWidgetConfig);
+      return undefined;
+    });
   }, [formRef, bindApplyElementConfigurationChanges]);
 };
 
